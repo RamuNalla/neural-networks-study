@@ -25,3 +25,7 @@ class FlexibleNN(nn.Module):
             'leaky_relu': nn.LeakyReLU()
         }
         self.activation = activation_functions.get(activation, nn.ReLU())
+
+        # Build layers
+        layers = []
+        prev_dim = input_dim
