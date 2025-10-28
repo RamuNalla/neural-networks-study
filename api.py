@@ -258,4 +258,54 @@ async def get_best_model(metric: str = 'test_rmse'):
         "details": best
     }
 
+@app.get("/analysis/depth-vs-performance")
+async def analyze_depth():
+    """Analyze relationship between network depth and performance"""
+    
+    all_results = []
+    for framework in ['pytorch', 'tensorflow']:
+        summary_file = Path(f'results/{framework}_summary.csv')
+        if summary_file.exists():
+            df = pd.read_csv(summary_file)
+            all_results.extend(df.to_dict(orient='records'))
+    
+    if not all_results:
+        raise HTTPException(status_code=404, detail="No experiments found")
+    
+    # Group by depth
+    depth_analysis = {}
+    for result in all_results:
+        depth = result['depth']
+        if depth not in depth_analysis:
+            depth_analysis[depth] = {
+                'count': 0,
+                'avg_rmse': 0,
+                'avg_r2': 0,
+                'avg_params': 0,
+                'avg_time': 0
+            }
+        
+        depth_analysis[depth]['count'] += 1
+        depth_analysis[depth]['avg_rmse'] += result['test_rmse']
+        depth_analysis[depth]['avg_r2'] += result['test_r2']
+        depth_analysis[depth]['avg_params'] += result['total_params']
+        depth_analysis[depth]['avg_time'] += result['training_time']
+    
+    # Calculate averages
+    for depth in depth_analysis:
+        count = depth_analysis[depth]['count']
+        depth_analysis[depth]['avg_rmse'] /= count
+        depth_analysis[depth]['avg_r2'] /= count
+        depth_analysis[depth]['avg_params'] /= count
+        depth_analysis[depth]['avg_time'] /= count
+    
+    return {
+        "analysis": "Depth vs Performance",
+        "data": depth_analysis
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
