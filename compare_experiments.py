@@ -127,3 +127,66 @@ def compare_experiments(experiment_names):
             print(f"  {fw.upper()}: Avg RMSE = {fw_avg_rmse:.4f}, Avg Time = {fw_avg_time:.2f}s")
     
     print("\n" + "="*80 + "\n")
+
+def list_available_experiments():
+    """List all available experiments"""
+    results_dir = Path('results')
+    if not results_dir.exists():
+        print("✗ No results directory found. Run experiments first!")
+        return []
+    
+    json_files = list(results_dir.glob('*.json'))
+    experiments = [f.stem for f in json_files]
+    
+    return sorted(experiments)
+
+def main():
+    """Main entry point"""
+    
+    if len(sys.argv) < 2:
+        print("\n🧠 Neural Network Experiment Comparator\n")
+        print("Usage:")
+        print("  python compare_experiments.py <experiment1> <experiment2> [experiment3 ...]\n")
+        print("Example:")
+        print("  python compare_experiments.py pytorch_shallow_network pytorch_deep_network\n")
+        
+        # List available experiments
+        available = list_available_experiments()
+        if available:
+            print("Available experiments:")
+            print("-" * 60)
+            
+            # Group by framework
+            pytorch_exps = [e for e in available if e.startswith('pytorch_')]
+            tensorflow_exps = [e for e in available if e.startswith('tensorflow_')]
+            
+            if pytorch_exps:
+                print("\nPyTorch:")
+                for exp in pytorch_exps:
+                    print(f"  • {exp}")
+            
+            if tensorflow_exps:
+                print("\nTensorFlow:")
+                for exp in tensorflow_exps:
+                    print(f"  • {exp}")
+            
+            print("\n" + "-" * 60)
+            print("\nQuick comparisons:")
+            print("  # Compare depth:")
+            print("  python compare_experiments.py pytorch_shallow_network pytorch_medium_depth pytorch_deep_network")
+            print("\n  # Compare width:")
+            print("  python compare_experiments.py pytorch_narrow_network pytorch_medium_width pytorch_wide_network")
+            print("\n  # Compare frameworks:")
+            print("  python compare_experiments.py pytorch_medium_depth tensorflow_medium_depth")
+            print()
+        
+        return
+    
+    # Get experiment names from command line
+    experiment_names = sys.argv[1:]
+    
+    # Compare experiments
+    compare_experiments(experiment_names)
+
+if __name__ == '__main__':
+    main()
