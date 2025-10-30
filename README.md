@@ -143,3 +143,114 @@ curl http://localhost:8000/summary  # Terminal 2: Test API
 - `with_l2`: L2 regularization = 0.01
 
 **Learn**: Preventing overfitting techniques
+
+## 📈 Understanding Results
+
+### Key Metrics
+
+#### RMSE (Root Mean Squared Error)
+- **Lower is better**
+- Measures average prediction error
+- Same units as target (quality score)
+- Typical range: 0.5 - 0.8
+
+#### R² Score (Coefficient of Determination)
+- **Higher is better** (max = 1.0)
+- Proportion of variance explained
+- 0.3 = explains 30% of variance
+- Typical range: 0.2 - 0.4
+
+#### MAE (Mean Absolute Error)
+- **Lower is better**
+- Average absolute prediction error
+- More robust to outliers than RMSE
+
+#### Training Time
+- Seconds to train the model
+- Consider for production deployment
+
+### Typical Findings
+
+#### 🔍 Depth
+- **Shallow (1-2 layers)**: Fast, may underfit
+- **Medium (3-4 layers)**: Best balance for this dataset
+- **Deep (5+ layers)**: Slower, diminishing returns on small datasets
+
+#### 📏 Width
+- **Narrow (<50 neurons)**: Fast but limited capacity
+- **Medium (50-128)**: Good starting point
+- **Wide (>256)**: Risk of overfitting, slower training
+
+#### ⚡ Learning Rate
+- **Too low (0.0001)**: Slow convergence, may not reach optimum
+- **Optimal (0.001)**: Good balance
+- **Too high (0.01)**: Unstable, may diverge
+
+#### 🛡️ Regularization
+- **Dropout**: Effective for overfitting, slight performance cost
+- **L2**: Prevents large weights, smoother models
+
+
+## 🔌 API Documentation
+
+### Base URL
+```
+http://localhost:8000
+```
+
+### Endpoints
+
+#### GET `/experiments`
+List all completed experiments
+
+```bash
+curl http://localhost:8000/experiments
+```
+
+#### GET `/results/{experiment_name}`
+Get detailed results for specific experiment
+
+```bash
+curl http://localhost:8000/results/pytorch_medium_depth
+```
+
+#### GET `/summary`
+Get summary of all experiments
+
+```bash
+curl http://localhost:8000/summary
+```
+
+#### GET `/compare?experiments=exp1,exp2,exp3`
+Compare multiple experiments
+
+```bash
+curl "http://localhost:8000/compare?experiments=pytorch_shallow_network,pytorch_deep_network"
+```
+
+#### GET `/best-model?metric=test_rmse`
+Get best performing model
+
+```bash
+curl "http://localhost:8000/best-model?metric=test_r2"
+```
+
+#### POST `/run-experiment`
+Run custom experiment
+
+```bash
+curl -X POST "http://localhost:8000/run-experiment" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "custom_experiment",
+    "framework": "pytorch",
+    "hidden_dims": [128, 64],
+    "learning_rate": 0.001,
+    "epochs": 100
+  }'
+```
+
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
