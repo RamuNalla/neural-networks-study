@@ -48,7 +48,7 @@ def main():
     
     # Step 2: Download data
     print_header("Step 2: Download Dataset")
-    if not run_command(f"{sys.executable} download_data.py", "Downloading Wine Quality dataset"):
+    if not run_command(f"{sys.executable} data_download.py", "Downloading Wine Quality dataset"):
         print("⚠ Warning: Dataset download failed. Please download manually.")
         return
     
