@@ -82,7 +82,7 @@ def main():
     print("   streamlit run app.py")
     print("\n2. Start FastAPI Server:")
     print("   python -m uvicorn api:app --reload")
-    print("\n3. View results directory:")
+    print("\n3. View results directory:")           # test
     print("   ls results/")
     print("\n4. Explore detailed results:")
     print("   python")
